@@ -431,11 +431,18 @@ async def _spamLoop(uid, stop_event):
         await asyncio.sleep(0.3)
 
 def add(uid):
+    print(f"[ADD] Request for UID: {uid}")
+
     if uid in _tasks:
+        print("[ADD] Already running")
         return False
+
     stop = asyncio.Event()
+
     task = asyncio.create_task(_spamLoop(uid, stop))
     _tasks[uid] = (task, stop)
+
+    print(f"[ADD] Started for UID: {uid}")
     return True
 
 def remove(uid):

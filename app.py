@@ -502,15 +502,27 @@ def stop_spam():
 _loop = None
 
 if __name__ == '__main__':
+    import os
     from threading import Thread
+
     _loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(_loop)
-    def runFlask():
-        try:
-            app.run(host='0.0.0.0', port=6272, threaded=True, use_reloader=False, debug=False)
-        except Exception as e:
-            print(f'[flask err] {e}')
-    Thread(target=_loop.run_forever, daemon=True).start()
+
+    def loop_runner():
+        asyncio.set_event_loop(_loop)
+        _loop.run_forever()
+
+    Thread(target=loop_runner, daemon=True).start()
+
     asyncio.run_coroutine_threadsafe(init(), _loop)
-    print('[*] Flask starting on port 8100')
-    runFlask()
+
+    port = int(os.environ.get("PORT", 8080))
+
+    print(f"[*] Flask starting on port {port}")
+
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        threaded=True,
+        use_reloader=False,
+        debug=False,
+    )

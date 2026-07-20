@@ -409,25 +409,34 @@ _active_semaphore = asyncio.Semaphore(_MAX_ACTIVE)
 _loop = None
 
 async def _spamLoop(uid, stop_event):
+    print(f"[SPAM] Loop started for {uid}")
+
     while not stop_event.is_set():
+        print(f"[SPAM] Connected clients: {len(_clis)}")
+
         async with _clis_lock:
             snap = [(c.writer2, c.key, c.iv, c.u) for c in _clis if c.alive and c.writer2 and c.key]
+
+        print(f"[SPAM] Active writers: {len(snap)}")
+
         for writer2, k, iv, u in snap:
-            if stop_event.is_set():
-                break
             try:
+                print(f"[SPAM] Sending from {u}")
+
                 roomPkt = openRoom(k, iv)
                 spmPkt = spmRoom(k, iv, uid)
+
                 writer2.write(roomPkt)
                 await writer2.drain()
+
                 for _ in range(10):
-                    if stop_event.is_set():
-                        break
                     writer2.write(spmPkt)
                     await writer2.drain()
                     await asyncio.sleep(0.05)
+
             except Exception as e:
-                print(f'spam err {u}: {e}')
+                print(f"[SPAM ERROR] {u}: {e}")
+
         await asyncio.sleep(0.3)
 
 def add(uid):

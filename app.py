@@ -447,39 +447,32 @@ async def _spamLoop(uid, stop_event):
     print(f"[SPAM] Loop started for {uid}")
 
     while not stop_event.is_set():
+        print(f"[SPAM] Connected clients: {len(_clis)}")
 
         async with _clis_lock:
-            snap = [
-                (c.writer2, c.key, c.iv, c.u)
-                for c in _clis
-                if c.alive and c.writer2 and c.key
-            ]
+            snap = [(c.writer2, c.key, c.iv, c.u) for c in _clis if c.alive and c.writer2 and c.key]
 
-        async def send_one(writer2, k, iv, u):
+        print(f"[SPAM] Active writers: {len(snap)}")
+
+        for writer2, k, iv, u in snap:
             try:
+                print(f"[SPAM] Sending from {u}")
+
                 roomPkt = openRoom(k, iv)
                 spmPkt = spmRoom(k, iv, uid)
 
                 writer2.write(roomPkt)
-                writer2.write(spmPkt)
-                writer2.write(spmPkt)
-                writer2.write(spmPkt)
-                writer2.write(spmPkt)
-                writer2.write(spmPkt)
-                writer2.write(spmPkt)
-                writer2.write(spmPkt)
-                writer2.write(spmPkt)
-                writer2.write(spmPkt)
-                writer2.write(spmPkt)
-
                 await writer2.drain()
+
+                for _ in range(10):
+                    writer2.write(spmPkt)
+                    await writer2.drain()
+                    await asyncio.sleep(0.05)
 
             except Exception as e:
                 print(f"[SPAM ERROR] {u}: {e}")
 
-        await asyncio.gather(*(send_one(*c) for c in snap), return_exceptions=True)
-
-        await asyncio.sleep(0.05)
+        await asyncio.sleep(0.3)
 
 def add(uid):
     print(f"[ADD] Request for UID: {uid}")

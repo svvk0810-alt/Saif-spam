@@ -165,6 +165,10 @@ def openRoom(k, iv):
 
     return genPkt(createProto(fields).hex(), "0E15", k, iv)
 
+def spmRoom(k, iv, uid):
+f = {1: 22, 2: {1: int(uid)}}
+return genPkt(str(createProto(f).hex()), '0E15', k, iv)
+
 async def gAccess(u, p, session):
     url = "https://100067.connect.garena.com/oauth/guest/token/grant"
     headers = {

@@ -127,17 +127,43 @@ def genPkt(pkt, n, k, iv):
     return bytes.fromhex(hdr + l + enc)
 
 def openRoom(k, iv):
-    f = {1: 2, 2: {1: 1, 2: 15, 3: 5, 4: "S1X TEAM", 5: "1", 6: 12, 7: 1,
-                    8: 1, 9: 1, 11: 1, 12: 2, 14: 36981056,
-                    15: {1: "IDC3", 2: 126, 3: "ME"},
-                    16: "\u0001\u0003\u0004\u0007\t\n\u000b\u0012\u000f\u000e\u0016\u0019\u001a \u001d",
-                    18: 2368584, 27: 1, 34: "\u0000\u0001", 40: "en", 48: 1,
-                    49: {1: 21}, 50: {1: 36981056, 2: 2368584, 5: 2}}}
-    return genPkt(str(createProto(f).hex()), '0E15', k, iv)
+    fields = {
+        1: 2,
+        2: {
+            1: 1,
+            2: 15,
+            3: 3,
+            4: "xAyOuB",
+            5: "11",
+            6: 8,
+            7: 30,
+            8: 1,
+            9: 1,
+            11: 1,
+            14: 35670336,
+            15: {
+                1: "IDC4",
+                2: 269,
+                3: "ME"
+            },
+            16: "\x01\x07\t\n\x0b\x12\x19 '",
+            18: 10757192,
+            27: 1,
+            34: "\x00\x01",
+            40: "fr",
+            46: 1104,
+            48: 1,
+            49: b"\x08\x15",
+            50: {
+                1: 35670336,
+                2: 10757192,
+                3: 80
+            },
+            56: 1
+        }
+    }
 
-def spmRoom(k, iv, uid):
-    f = {1: 22, 2: {1: int(uid)}}
-    return genPkt(str(createProto(f).hex()), '0E15', k, iv)
+    return genPkt(createProto(fields).hex(), "0E15", k, iv)
 
 async def gAccess(u, p, session):
     url = "https://100067.connect.garena.com/oauth/guest/token/grant"

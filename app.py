@@ -465,7 +465,7 @@ async def _spamLoop(uid, stop_event):
                 await writer2.drain()
 
                 # انتظر حتى يفتح الروم
-                await asyncio.sleep(1)
+                await asyncio.sleep(15)
 
                 for _ in range(10):
                     writer2.write(spmPkt)

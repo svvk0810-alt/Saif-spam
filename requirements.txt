@@ -1,9 +1,7 @@
+Flask[async]
+requests
 aiohttp
-aiofiles
-pyjwt
-cryptography
+googleapis-common-protos
 pycryptodome
 protobuf
-protobuf_decoder
-flask
-urllib3
+Werkzeug
